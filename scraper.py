@@ -48,10 +48,31 @@ class FutureToolsScraper:
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--disable-software-rasterizer")
+        chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.add_argument("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+        chrome_options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 
-        service = Service(ChromeDriverManager().install())
+        # Additional options for cloud environments
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--remote-debugging-port=9222")
+        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+
+        # Try to use system chromium-driver first (for Streamlit Cloud)
+        import os
+        import shutil
+
+        chromium_driver_path = shutil.which("chromedriver")
+
+        if chromium_driver_path:
+            # Use system chromedriver (Streamlit Cloud)
+            print(f"Using system chromedriver at: {chromium_driver_path}")
+            service = Service(executable_path=chromium_driver_path)
+        else:
+            # Use ChromeDriverManager (local development)
+            print("Using ChromeDriverManager to install chromedriver")
+            service = Service(ChromeDriverManager().install())
+
         self.driver = webdriver.Chrome(service=service, options=chrome_options)
         return self.driver
 
@@ -199,16 +220,23 @@ class FutureToolsScraper:
         tools = []
 
         try:
+            print("Setting up Chrome driver...")
             self._setup_driver()
+            print("Chrome driver setup successful!")
+
+            print(f"Loading page: {self.NEWLY_ADDED_URL}")
             self.driver.get(self.NEWLY_ADDED_URL)
 
             # Wait for page to load
+            print("Waiting for page to load...")
             time.sleep(3)
 
             # Scroll to load all content
+            print("Scrolling to load content...")
             self._scroll_to_load_all(max_scrolls=10)
 
             # Get page source and parse with BeautifulSoup
+            print("Parsing page content...")
             soup = BeautifulSoup(self.driver.page_source, 'lxml')
 
             # Try multiple possible selectors for tool cards
@@ -228,7 +256,9 @@ class FutureToolsScraper:
                     tools.append(tool_data)
 
         except Exception as e:
+            import traceback
             print(f"Error scraping newly added tools: {e}")
+            print(f"Traceback: {traceback.format_exc()}")
         finally:
             self._close_driver()
 
@@ -309,10 +339,15 @@ class FutureToolsScraper:
         all_tools = []
 
         try:
+            print("Setting up Chrome driver...")
             self._setup_driver()
+            print("Chrome driver setup successful!")
+
+            print(f"Loading page: {self.BASE_URL}")
             self.driver.get(self.BASE_URL)
 
             # Wait for page to load
+            print("Waiting for page to load...")
             time.sleep(3)
 
             # Scroll to load all content
@@ -320,6 +355,7 @@ class FutureToolsScraper:
             self._scroll_to_load_all()
 
             # Get page source and parse with BeautifulSoup
+            print("Parsing page content...")
             soup = BeautifulSoup(self.driver.page_source, 'lxml')
 
             # Try multiple possible selectors for tool cards
@@ -334,13 +370,16 @@ class FutureToolsScraper:
             print(f"Found {len(tool_cards)} total tool cards")
 
             # Parse all tools without filtering
+            print("Extracting tool information...")
             for card in tool_cards:
                 tool_data = self._parse_tool_card(card)
                 if tool_data:
                     all_tools.append(tool_data)
 
         except Exception as e:
+            import traceback
             print(f"Error scraping all tools: {e}")
+            print(f"Traceback: {traceback.format_exc()}")
         finally:
             self._close_driver()
 
