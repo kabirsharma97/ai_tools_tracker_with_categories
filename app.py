@@ -1,6 +1,6 @@
 """
-FutureTools.io Tracker - Streamlit Application
-A comprehensive tool to track and explore AI tools from FutureTools.io
+AI Tools Tracker - Streamlit Application
+A comprehensive tool to track and explore AI tools
 """
 
 import streamlit as st
@@ -13,7 +13,7 @@ import json
 
 # Page configuration
 st.set_page_config(
-    page_title="FutureTools.io Tracker",
+    page_title="AI Tools Tracker",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -144,8 +144,8 @@ def main():
     """Main application"""
 
     # Header
-    st.markdown('<div class="main-header">🤖 FutureTools.io Tracker</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Track and explore AI tools from FutureTools.io</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">🤖 AI Tools Tracker</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Track and explore AI tools from</div>', unsafe_allow_html=True)
 
     # Load cached data on startup
     if not st.session_state.tools_data and not st.session_state.scraping_in_progress:
@@ -182,7 +182,7 @@ def main():
                     st.info("🔍 Scraping newly added tools from the last 24 hours...")
                     tools = scraper.scrape_newly_added()
                 else:
-                    st.info("🔍 Scraping ALL tools from FutureTools.io... This will take 5-10 minutes.")
+                    st.info("🔍 Scraping ALL tools from website... This will take 5-10 minutes.")
                     tools = scraper.scrape_all_tools()
 
                 if tools:
@@ -358,7 +358,7 @@ def main():
         ### How to use this app:
 
         1. **Newly Added (Last 24 Hours)**: Scrapes only the tools added in the last 24 hours (fastest, ~1-10 tools)
-        2. **Full Update (All Tools)**: Scrapes ALL tools from FutureTools.io (~2000+ tools, takes 5-10 minutes)
+        2. **Full Update (All Tools)**: Scrapes ALL tools from website (~2000+ tools, takes 5-10 minutes)
         3. **View Cached Data**: View previously scraped data without scraping again
 
         ### Features:
