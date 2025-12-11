@@ -145,7 +145,7 @@ def main():
 
     # Header
     st.markdown('<div class="main-header">🤖 AI Tools Tracker</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Track and explore AI tools from</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Track and explore AI tools from website</div>', unsafe_allow_html=True)
 
     # Load cached data on startup
     if not st.session_state.tools_data and not st.session_state.scraping_in_progress:
